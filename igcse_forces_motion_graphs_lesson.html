@@ -1,0 +1,372 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); color: var(--color-text-primary); }
+  .lesson-wrap { padding: 1rem 0 2rem; }
+  h2 { font-size: 20px; font-weight: 500; margin-bottom: 0.5rem; color: var(--color-text-primary); }
+  h3 { font-size: 16px; font-weight: 500; margin-bottom: 0.5rem; color: var(--color-text-primary); }
+  p { font-size: 15px; line-height: 1.7; color: var(--color-text-primary); margin-bottom: 0.75rem; }
+  .section { margin-bottom: 2rem; }
+  .pill { display: inline-block; background: #E6F1FB; color: #0C447C; border-radius: 20px; padding: 3px 12px; font-size: 13px; font-weight: 500; margin-bottom: 0.75rem; }
+  .pill.green { background: #EAF3DE; color: #3B6D11; }
+  .pill.amber { background: #FAEEDA; color: #854F0B; }
+  .pill.red { background: #FCEBEB; color: #A32D2D; }
+  .formula-box { background: var(--color-background-secondary); border-left: 3px solid #378ADD; border-radius: 0; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 15px; }
+  .formula-box.green { border-left-color: #639922; }
+  .formula-box.amber { border-left-color: #BA7517; }
+  .key-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 1rem 0; }
+  .key-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; }
+  .key-card .label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .key-card .val { font-size: 15px; font-weight: 500; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .tab { padding: 6px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); transition: background 0.15s; }
+  .tab.active { background: #185FA5; color: #fff; border-color: #185FA5; }
+  .graph-section { display: none; }
+  .graph-section.active { display: block; }
+  canvas { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: var(--color-background-primary); display: block; margin: 0.75rem 0; }
+  .annotation { font-size: 13px; color: var(--color-text-secondary); margin: 4px 0; padding-left: 10px; border-left: 2px solid var(--color-border-tertiary); }
+  .worked { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem 1.25rem; margin: 1rem 0; }
+  .worked-step { margin: 0.5rem 0; font-size: 14px; line-height: 1.7; }
+  .worked-step span { font-weight: 500; color: #185FA5; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 0.75rem 0; }
+  th { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--color-border-secondary); font-weight: 500; color: var(--color-text-secondary); font-size: 13px; }
+  td { padding: 8px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 1rem 0; }
+  .summary-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.875rem 1rem; }
+  .summary-card .stitle { font-size: 13px; font-weight: 500; color: #0C447C; margin-bottom: 6px; }
+  .summary-card .sbody { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+  .ask-btn { display: inline-block; margin-top: 0.75rem; padding: 8px 18px; border: 0.5px solid var(--color-border-secondary); border-radius: 20px; font-size: 14px; cursor: pointer; background: var(--color-background-primary); color: var(--color-text-primary); }
+  .ask-btn:hover { background: var(--color-background-secondary); }
+  .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1.5rem 0; }
+</style>
+
+<div class="lesson-wrap">
+  <h2>Forces and Motion: Distance-Time & Velocity-Time Graphs</h2>
+  <p style="color: var(--color-text-secondary); font-size: 14px; margin-bottom: 1.25rem;">Pearson International IGCSE Physics — Topic 1.2</p>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('dt')">Distance-time graphs</div>
+    <div class="tab" onclick="switchTab('vt')">Velocity-time graphs</div>
+    <div class="tab" onclick="switchTab('compare')">Key rules summary</div>
+  </div>
+
+  <!-- DISTANCE-TIME -->
+  <div class="graph-section active" id="tab-dt">
+    <div class="section">
+      <span class="pill">Distance-time graphs</span>
+      <p>A distance-time graph shows how far an object has travelled from its starting point over time. The <strong>gradient (slope)</strong> of the line tells you the <strong>speed</strong> of the object.</p>
+      <div class="formula-box">Speed = distance ÷ time &nbsp;&nbsp; → &nbsp;&nbsp; gradient = Δd / Δt &nbsp;&nbsp; (unit: m/s)</div>
+    </div>
+
+    <h3>What each type of line means</h3>
+    <canvas id="dtCanvas" width="620" height="280"></canvas>
+    <div style="margin-bottom:1rem;">
+      <div class="annotation" style="border-left-color:#185FA5;">Horizontal line (zero gradient) → object is stationary</div>
+      <div class="annotation" style="border-left-color:#639922;">Straight diagonal line → constant speed (steeper = faster)</div>
+      <div class="annotation" style="border-left-color:#BA7517;">Curved line getting steeper → object is accelerating</div>
+      <div class="annotation" style="border-left-color:#A32D2D;">Curved line getting shallower → object is decelerating</div>
+    </div>
+
+    <hr class="divider">
+
+    <h3>Worked example</h3>
+    <div class="worked">
+      <p style="font-size:14px; margin-bottom:0.5rem;"><strong>Question:</strong> A car travels 120 m in 8 s at constant speed, then stops for 4 s, then travels 60 m in 6 s. Calculate the speed during each moving section.</p>
+      <canvas id="dtWorkedCanvas" width="620" height="220"></canvas>
+      <div class="worked-step"><span>Section A (0–8 s):</span> speed = 120 m ÷ 8 s = <strong>15 m/s</strong></div>
+      <div class="worked-step"><span>Section B (8–12 s):</span> gradient = 0, so speed = <strong>0 m/s</strong> (stationary)</div>
+      <div class="worked-step"><span>Section C (12–18 s):</span> speed = 60 m ÷ 6 s = <strong>10 m/s</strong></div>
+      <div class="worked-step" style="margin-top:0.5rem;">Note: Section C is slower — the line is less steep.</div>
+    </div>
+
+    <hr class="divider">
+
+    <h3>Curved lines and acceleration</h3>
+    <p>On a distance-time graph, if the line curves, the object is not at constant speed. To find the speed at a specific point on a curve, draw a <strong>tangent</strong> at that point and calculate its gradient.</p>
+    <div class="formula-box amber">Speed at a point = gradient of tangent at that point</div>
+    <button class="ask-btn" onclick="sendPrompt('Can you explain more about drawing a tangent on a curved distance-time graph for IGCSE?')">How to draw a tangent ↗</button>
+  </div>
+
+  <!-- VELOCITY-TIME -->
+  <div class="graph-section" id="tab-vt">
+    <div class="section">
+      <span class="pill green">Velocity-time graphs</span>
+      <p>A velocity-time graph shows how an object's velocity changes over time. Two key things you can read from it:</p>
+      <div class="key-grid">
+        <div class="key-card"><div class="label">Gradient of line</div><div class="val">= Acceleration (m/s²)</div></div>
+        <div class="key-card"><div class="label">Area under graph</div><div class="val">= Distance travelled (m)</div></div>
+      </div>
+      <div class="formula-box green">Acceleration = change in velocity ÷ time &nbsp;&nbsp; → &nbsp;&nbsp; a = Δv / Δt</div>
+    </div>
+
+    <h3>What each type of line means</h3>
+    <canvas id="vtCanvas" width="620" height="280"></canvas>
+    <div style="margin-bottom:1rem;">
+      <div class="annotation" style="border-left-color:#185FA5;">Horizontal line → constant velocity (zero acceleration)</div>
+      <div class="annotation" style="border-left-color:#639922;">Line sloping up → acceleration (velocity increasing)</div>
+      <div class="annotation" style="border-left-color:#A32D2D;">Line sloping down → deceleration (velocity decreasing)</div>
+      <div class="annotation" style="border-left-color:#BA7517;">Curved line → non-uniform acceleration (gradient changing)</div>
+    </div>
+
+    <hr class="divider">
+
+    <h3>Worked example — acceleration and distance</h3>
+    <div class="worked">
+      <p style="font-size:14px; margin-bottom:0.5rem;"><strong>Question:</strong> A train accelerates from rest to 30 m/s in 10 s, travels at 30 m/s for 20 s, then decelerates to rest in 15 s. Find: (a) acceleration, (b) deceleration, (c) total distance.</p>
+      <canvas id="vtWorkedCanvas" width="620" height="220"></canvas>
+      <div class="worked-step"><span>(a) Acceleration (0–10 s):</span> a = (30−0) ÷ 10 = <strong>3 m/s²</strong></div>
+      <div class="worked-step"><span>(b) Deceleration (30–45 s):</span> a = (0−30) ÷ 15 = <strong>−2 m/s²</strong> (magnitude 2 m/s²)</div>
+      <div class="worked-step"><span>(c) Total distance = area under graph:</span></div>
+      <div class="worked-step" style="padding-left:1rem;">Triangle A (0–10 s): ½ × 10 × 30 = 150 m</div>
+      <div class="worked-step" style="padding-left:1rem;">Rectangle B (10–30 s): 20 × 30 = 600 m</div>
+      <div class="worked-step" style="padding-left:1rem;">Triangle C (30–45 s): ½ × 15 × 30 = 225 m</div>
+      <div class="worked-step"><strong>Total = 150 + 600 + 225 = 975 m</strong></div>
+    </div>
+
+    <hr class="divider">
+
+    <h3>Area under graph — shapes to use</h3>
+    <table>
+      <tr><th>Shape of section</th><th>Formula</th><th>When to use it</th></tr>
+      <tr><td>Rectangle</td><td>width × height</td><td>Constant velocity</td></tr>
+      <tr><td>Triangle</td><td>½ × base × height</td><td>Uniform acceleration from/to zero</td></tr>
+      <tr><td>Trapezium</td><td>½ × (a + b) × h</td><td>Uniform acceleration, not from zero</td></tr>
+    </table>
+    <button class="ask-btn" onclick="sendPrompt('Give me a worked example of finding distance using the trapezium rule on a velocity-time graph for IGCSE.')">Trapezium example ↗</button>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="graph-section" id="tab-compare">
+    <span class="pill">Key rules — both graph types</span>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="stitle">Distance-time: gradient</div>
+        <div class="sbody">Gradient = speed. Steeper slope = faster. Horizontal = stationary. Can never slope downward (distance can't decrease).</div>
+      </div>
+      <div class="summary-card">
+        <div class="stitle">Distance-time: curve</div>
+        <div class="sbody">Curve getting steeper = accelerating. Curve getting shallower = decelerating. Speed at a point = gradient of tangent.</div>
+      </div>
+      <div class="summary-card">
+        <div class="stitle">Velocity-time: gradient</div>
+        <div class="sbody">Gradient = acceleration. Positive slope = speeding up. Negative slope = slowing down. Horizontal = constant speed.</div>
+      </div>
+      <div class="summary-card">
+        <div class="stitle">Velocity-time: area</div>
+        <div class="sbody">Area under graph = distance travelled. Split into rectangles and triangles. Always use the area between the line and the time axis.</div>
+      </div>
+      <div class="summary-card">
+        <div class="stitle">Units — always check</div>
+        <div class="sbody">Speed/velocity: m/s. Acceleration: m/s². Distance: m. Time: s. Convert km/h → m/s by ÷ 3.6.</div>
+      </div>
+      <div class="summary-card">
+        <div class="stitle">Velocity vs speed</div>
+        <div class="sbody">Speed is scalar (just magnitude). Velocity is vector (magnitude + direction). VT graphs can go below zero — this means moving in the opposite direction.</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <h3>Quick comparison table</h3>
+    <table>
+      <tr><th>Feature</th><th>Distance-time</th><th>Velocity-time</th></tr>
+      <tr><td>y-axis</td><td>Distance (m)</td><td>Velocity (m/s)</td></tr>
+      <tr><td>Gradient gives</td><td>Speed (m/s)</td><td>Acceleration (m/s²)</td></tr>
+      <tr><td>Area under gives</td><td>— (not used)</td><td>Distance (m)</td></tr>
+      <tr><td>Horizontal line means</td><td>Stationary</td><td>Constant speed</td></tr>
+      <tr><td>Curved line means</td><td>Changing speed</td><td>Changing acceleration</td></tr>
+      <tr><td>Can y go negative?</td><td>No</td><td>Yes (opposite direction)</td></tr>
+    </table>
+    <button class="ask-btn" onclick="sendPrompt('Give me IGCSE physics practice questions on distance-time and velocity-time graphs, questions only no answers.')">Practice questions only ↗</button>
+  </div>
+</div>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const names = ['dt','vt','compare'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.graph-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'dt') { drawDT(); drawDTWorked(); }
+  if (name === 'vt') { drawVT(); drawVTWorked(); }
+}
+
+function getColors() {
+  const el = document.documentElement;
+  const style = getComputedStyle(el);
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return {
+    text: isDark ? '#e0ddd6' : '#2c2c2a',
+    grid: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)',
+    axis: isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)',
+    bg: isDark ? '#1e1e1c' : '#fff',
+  };
+}
+
+function setupCanvas(canvas) {
+  const c = getColors();
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = c.bg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  return ctx;
+}
+
+function drawAxes(ctx, ox, oy, w, h, xLabel, yLabel, xMax, yMax, xTicks, yTicks) {
+  const c = getColors();
+  ctx.strokeStyle = c.axis;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(ox, oy - h); ctx.lineTo(ox, oy); ctx.lineTo(ox + w, oy);
+  ctx.stroke();
+  ctx.fillStyle = c.text;
+  ctx.font = '13px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(xLabel, ox + w/2, oy + 36);
+  ctx.save(); ctx.translate(ox - 38, oy - h/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText(yLabel, 0, 0); ctx.restore();
+
+  ctx.strokeStyle = c.grid;
+  ctx.font = '11px sans-serif';
+  for (let i = 0; i <= xTicks; i++) {
+    const x = ox + (w / xTicks) * i;
+    const val = Math.round((xMax / xTicks) * i);
+    ctx.beginPath(); ctx.moveTo(x, oy); ctx.lineTo(x, oy - h); ctx.stroke();
+    ctx.fillStyle = c.text; ctx.textAlign = 'center';
+    ctx.fillText(val, x, oy + 16);
+  }
+  for (let i = 0; i <= yTicks; i++) {
+    const y = oy - (h / yTicks) * i;
+    const val = Math.round((yMax / yTicks) * i);
+    ctx.beginPath(); ctx.moveTo(ox, y); ctx.lineTo(ox + w, y); ctx.stroke();
+    ctx.fillStyle = c.text; ctx.textAlign = 'right';
+    ctx.fillText(val, ox - 6, y + 4);
+  }
+}
+
+function drawDT() {
+  const canvas = document.getElementById('dtCanvas');
+  const ctx = setupCanvas(canvas);
+  const ox = 55, oy = 255, w = 540, h = 220;
+  drawAxes(ctx, ox, oy, w, h, 'Time (s)', 'Distance (m)', 20, 100, 4, 5);
+
+  const xS = w/20, yS = h/100;
+  ctx.lineWidth = 2.5;
+
+  // horizontal - stationary
+  ctx.strokeStyle = '#185FA5';
+  ctx.beginPath(); ctx.moveTo(ox, oy - 20*yS); ctx.lineTo(ox + 4*xS, oy - 20*yS); ctx.stroke();
+  ctx.fillStyle = '#185FA5'; ctx.font = '12px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('Stationary', ox + 4*xS + 5, oy - 20*yS + 4);
+
+  // constant speed
+  ctx.strokeStyle = '#639922';
+  ctx.beginPath(); ctx.moveTo(ox + 5*xS, oy); ctx.lineTo(ox + 12*xS, oy - 60*yS); ctx.stroke();
+  ctx.fillStyle = '#639922';
+  ctx.fillText('Constant speed', ox + 12*xS + 5, oy - 60*yS + 4);
+
+  // accelerating curve
+  ctx.strokeStyle = '#BA7517';
+  ctx.beginPath();
+  for (let t = 0; t <= 6; t += 0.1) {
+    const x = ox + (13 + t)*xS;
+    const d = 1.5 * t * t;
+    const y = oy - d*yS;
+    t < 0.1 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.fillStyle = '#BA7517';
+  ctx.fillText('Accelerating', ox + 19*xS + 5, oy - 54*yS);
+}
+
+function drawDTWorked() {
+  const canvas = document.getElementById('dtWorkedCanvas');
+  const ctx = setupCanvas(canvas);
+  const ox = 55, oy = 195, w = 540, h = 165;
+  drawAxes(ctx, ox, oy, w, h, 'Time (s)', 'Distance (m)', 18, 180, 6, 6);
+  const xS = w/18, yS = h/180;
+  ctx.lineWidth = 2.5; ctx.strokeStyle = '#185FA5';
+  ctx.beginPath();
+  ctx.moveTo(ox, oy);
+  ctx.lineTo(ox + 8*xS, oy - 120*yS); // A: 0-8s, 0-120m
+  ctx.lineTo(ox + 12*xS, oy - 120*yS); // B: 8-12s stationary
+  ctx.lineTo(ox + 18*xS, oy - 180*yS); // C: 12-18s, 120-180m
+  ctx.stroke();
+
+  ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+  const labels = [['A', 4], ['B', 10], ['C', 15]];
+  const ys = [60, 120, 150];
+  labels.forEach(([l, t], i) => {
+    ctx.fillStyle = '#185FA5';
+    ctx.fillText(l, ox + t*xS, oy - ys[i]*yS - 10);
+  });
+}
+
+function drawVT() {
+  const canvas = document.getElementById('vtCanvas');
+  const ctx = setupCanvas(canvas);
+  const ox = 55, oy = 255, w = 540, h = 220;
+  drawAxes(ctx, ox, oy, w, h, 'Time (s)', 'Velocity (m/s)', 20, 40, 4, 4);
+  const xS = w/20, yS = h/40;
+  ctx.lineWidth = 2.5;
+
+  // horizontal - constant v
+  ctx.strokeStyle = '#185FA5';
+  ctx.beginPath(); ctx.moveTo(ox, oy - 30*yS); ctx.lineTo(ox + 4*xS, oy - 30*yS); ctx.stroke();
+  ctx.fillStyle='#185FA5'; ctx.font='12px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('Constant velocity', ox+4*xS+5, oy-30*yS+4);
+
+  // accelerating
+  ctx.strokeStyle = '#639922';
+  ctx.beginPath(); ctx.moveTo(ox+5*xS, oy); ctx.lineTo(ox+10*xS, oy-35*yS); ctx.stroke();
+  ctx.fillStyle='#639922'; ctx.fillText('Acceleration', ox+10*xS+5, oy-35*yS+4);
+
+  // decelerating
+  ctx.strokeStyle = '#A32D2D';
+  ctx.beginPath(); ctx.moveTo(ox+12*xS, oy-35*yS); ctx.lineTo(ox+17*xS, oy); ctx.stroke();
+  ctx.fillStyle='#A32D2D'; ctx.fillText('Deceleration', ox+12*xS, oy-38*yS);
+
+  // non-uniform (curve)
+  ctx.strokeStyle = '#BA7517';
+  ctx.beginPath();
+  for (let t = 0; t <= 3; t += 0.1) {
+    const x = ox + (17+t)*xS;
+    const v = 40 - t*t*4;
+    const y = oy - Math.max(0,v)*yS;
+    t<0.1 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.fillStyle='#BA7517'; ctx.fillText('Non-uniform accel.', ox+17*xS, oy-42*yS);
+}
+
+function drawVTWorked() {
+  const canvas = document.getElementById('vtWorkedCanvas');
+  const ctx = setupCanvas(canvas);
+  const ox = 55, oy = 195, w = 540, h = 165;
+  drawAxes(ctx, ox, oy, w, h, 'Time (s)', 'Velocity (m/s)', 45, 30, 9, 6);
+  const xS = w/45, yS = h/30;
+  
+  ctx.fillStyle = 'rgba(56,138,221,0.10)';
+  ctx.beginPath();
+  ctx.moveTo(ox, oy);
+  ctx.lineTo(ox+10*xS, oy-30*yS);
+  ctx.lineTo(ox+30*xS, oy-30*yS);
+  ctx.lineTo(ox+45*xS, oy);
+  ctx.closePath(); ctx.fill();
+
+  ctx.lineWidth = 2.5; ctx.strokeStyle = '#185FA5';
+  ctx.beginPath();
+  ctx.moveTo(ox, oy);
+  ctx.lineTo(ox+10*xS, oy-30*yS);
+  ctx.lineTo(ox+30*xS, oy-30*yS);
+  ctx.lineTo(ox+45*xS, oy);
+  ctx.stroke();
+
+  ctx.font='12px sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#185FA5';
+  ctx.fillText('A (triangle)', ox+5*xS, oy-10*yS);
+  ctx.fillText('B (rectangle)', ox+20*xS, oy-15*yS);
+  ctx.fillText('C (triangle)', ox+37.5*xS, oy-10*yS);
+}
+
+drawDT(); drawDTWorked();
+</script>
